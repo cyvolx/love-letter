@@ -1,11 +1,14 @@
 import { useState, useEffect } from "react";
+import FloatingHearts from "./FloatingHearts";
 
 interface EnvelopeAnimationProps {
   onComplete: () => void;
 }
 
 const EnvelopeAnimation = ({ onComplete }: EnvelopeAnimationProps) => {
-  const [phase, setPhase] = useState<"appear" | "opening" | "letter-out" | "done">("appear");
+  const [phase, setPhase] = useState<
+    "appear" | "opening" | "letter-out" | "done"
+  >("appear");
 
   useEffect(() => {
     const t1 = setTimeout(() => setPhase("opening"), 800);
@@ -22,11 +25,25 @@ const EnvelopeAnimation = ({ onComplete }: EnvelopeAnimationProps) => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden">
-      {/* Background glow */}
+      {/* Floating hearts throughout envelope animation */}
+      <FloatingHearts />
+
+      {/* Enhanced background glow - more romantic and dreamy */}
       <div
         className="absolute inset-0 transition-opacity duration-[2s]"
         style={{
-          background: "radial-gradient(ellipse at center, hsl(350 50% 85% / 0.25) 0%, transparent 70%)",
+          background:
+            "radial-gradient(ellipse at center, hsl(350 60% 85% / 0.35) 0%, hsl(350 50% 90% / 0.2) 50%, transparent 70%)",
+          opacity: phase === "done" ? 0 : 1,
+        }}
+      />
+
+      {/* Additional dreamy sparkle effect */}
+      <div
+        className="absolute inset-0 transition-opacity duration-[2s]"
+        style={{
+          background:
+            "radial-gradient(circle at 30% 40%, hsl(10 70% 85% / 0.2) 0%, transparent 30%), radial-gradient(circle at 70% 60%, hsl(340 65% 88% / 0.25) 0%, transparent 35%)",
           opacity: phase === "done" ? 0 : 1,
         }}
       />
@@ -39,23 +56,33 @@ const EnvelopeAnimation = ({ onComplete }: EnvelopeAnimationProps) => {
         }}
       >
         {/* Envelope */}
-        <div className="relative w-64 h-44 md:w-80 md:h-56 mx-auto" style={{ perspective: "800px" }}>
+        <div
+          className="relative w-64 h-44 md:w-80 md:h-56 mx-auto"
+          style={{ perspective: "800px" }}
+        >
           {/* Envelope body */}
           <div className="absolute inset-0 bg-cream-dark rounded-lg border border-gold-light/40 shadow-xl overflow-hidden">
-            {/* Envelope texture pattern */}
-            <div className="absolute inset-0 opacity-10"
+            {/* Enhanced envelope texture pattern */}
+            <div
+              className="absolute inset-0 opacity-10"
               style={{
-                backgroundImage: "repeating-linear-gradient(45deg, transparent, transparent 10px, hsl(var(--gold) / 0.1) 10px, hsl(var(--gold) / 0.1) 11px)",
+                backgroundImage:
+                  "repeating-linear-gradient(45deg, transparent, transparent 10px, hsl(var(--gold) / 0.1) 10px, hsl(var(--gold) / 0.1) 11px)",
               }}
             />
-            {/* Wax seal */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-rose-deep flex items-center justify-center shadow-md z-20"
+            {/* Wax seal with enhanced glow */}
+            <div
+              className="absolute bottom-4 left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-rose-deep flex items-center justify-center shadow-md z-20"
               style={{
                 opacity: phase === "appear" ? 1 : 0,
                 transition: "opacity 0.5s ease",
+                boxShadow:
+                  "0 0 20px rgba(220, 38, 38, 0.4), 0 4px 6px rgba(0, 0, 0, 0.1)",
               }}
             >
-              <span className="text-primary-foreground text-xs font-script">♥</span>
+              <span className="text-primary-foreground text-xs font-script">
+                ♥
+              </span>
             </div>
           </div>
 
@@ -63,7 +90,8 @@ const EnvelopeAnimation = ({ onComplete }: EnvelopeAnimationProps) => {
           <div
             className="absolute top-0 left-0 right-0 h-1/2 origin-top z-30"
             style={{
-              transform: phase === "appear" ? "rotateX(0deg)" : "rotateX(-180deg)",
+              transform:
+                phase === "appear" ? "rotateX(0deg)" : "rotateX(-180deg)",
               transition: "transform 1.2s cubic-bezier(0.4, 0, 0.2, 1)",
               transformStyle: "preserve-3d",
             }}
@@ -88,7 +116,7 @@ const EnvelopeAnimation = ({ onComplete }: EnvelopeAnimationProps) => {
             />
           </div>
 
-          {/* Letter sliding out */}
+          {/* Letter sliding out with enhanced glow */}
           <div
             className="absolute left-3 right-3 top-4 bottom-4 bg-parchment rounded shadow-sm z-20 flex items-center justify-center"
             style={{
@@ -97,24 +125,46 @@ const EnvelopeAnimation = ({ onComplete }: EnvelopeAnimationProps) => {
                   ? "translateY(-110%)"
                   : "translateY(0)",
               opacity: phase === "done" ? 0 : 1,
-              transition: "transform 1.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease",
+              transition:
+                "transform 1.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease",
+              boxShadow:
+                phase === "letter-out" || phase === "done"
+                  ? "0 10px 40px rgba(218, 165, 32, 0.3), 0 0 60px rgba(255, 192, 203, 0.2)"
+                  : "0 2px 8px rgba(0, 0, 0, 0.1)",
             }}
           >
             <div className="text-center px-4">
-              <p className="font-script text-lg md:text-xl text-foreground">For You</p>
-              <p className="font-script text-gold text-sm mt-1">with all my love</p>
+              <p className="font-script text-lg md:text-xl text-foreground">
+                For You
+              </p>
+              <p className="font-script text-gold text-sm mt-1">
+                with all my love
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Label */}
+        {/* Label with gentle pulse */}
         <p
           className="text-center mt-8 font-body text-muted-foreground italic text-sm transition-opacity duration-500"
-          style={{ opacity: phase === "appear" ? 1 : 0 }}
+          style={{
+            opacity: phase === "appear" ? 1 : 0,
+            animation:
+              phase === "appear"
+                ? "gentle-pulse 2s ease-in-out infinite"
+                : "none",
+          }}
         >
           A letter from my heart to yours…
         </p>
       </div>
+
+      <style>{`
+        @keyframes gentle-pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.7; }
+        }
+      `}</style>
     </div>
   );
 };
