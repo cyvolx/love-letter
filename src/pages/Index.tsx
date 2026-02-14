@@ -13,28 +13,40 @@ const Index = () => {
   const envelopeAudioRef = useRef<HTMLAudioElement | null>(null);
   const letterAudioRef = useRef<HTMLAudioElement | null>(null);
 
-  // Initialize lock screen ambient audio
+  // Helper function to play audio with graceful error handling
+  const playAudioSafe = (audio: HTMLAudioElement, onError?: () => void) => {
+    const playPromise = audio.play();
+    if (playPromise !== undefined) {
+      playPromise.catch((error) => {
+        console.log(
+          "Audio playback blocked - will start on user interaction:",
+          error,
+        );
+        if (onError) onError();
+
+        // Add click listener to start audio on user interaction
+        const startAudio = () => {
+          audio.play().catch(() => console.log("Still blocked"));
+          document.removeEventListener("click", startAudio);
+        };
+        document.addEventListener("click", startAudio, { once: true });
+      });
+    }
+  };
+
+  // Initialize lock screen piano melody
   useEffect(() => {
     if (phase === "locked") {
-      // Create lock screen ambient audio
-      lockScreenAudioRef.current = new Audio(
-        "https://cdn.pixabay.com/audio/2022/03/10/audio_4a465279bd.mp3",
-      ); // Soft romantic piano
+      // AUDIO: Gentle piano melody - soft and romantic
+      lockScreenAudioRef.current = new Audio("/audio/lock-screen-piano.mp3");
       lockScreenAudioRef.current.loop = true;
-      lockScreenAudioRef.current.volume = 0.15; // Very soft
+      lockScreenAudioRef.current.volume = 0.6; // Louder and clearer
 
-      // Attempt autoplay with fallback to user interaction
-      const playPromise = lockScreenAudioRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          // Autoplay blocked - will play on first user interaction
-          console.log("Autoplay blocked - audio will start on interaction");
-        });
-      }
+      // Try to play with fallback
+      playAudioSafe(lockScreenAudioRef.current);
     }
 
     return () => {
-      // Cleanup lock screen audio when leaving phase
       if (lockScreenAudioRef.current) {
         lockScreenAudioRef.current.pause();
         lockScreenAudioRef.current = null;
@@ -43,21 +55,22 @@ const Index = () => {
   }, [phase]);
 
   const handleUnlock = useCallback(() => {
-    // Play magical success sound
-    const successSound = new Audio(
-      "https://cdn.pixabay.com/audio/2022/03/24/audio_13a91f2903.mp3",
-    ); // Magical chime
-    successSound.volume = 0.4;
-    successSound.play();
+    // AUDIO: Magical sparkle - cascading fairy dust sound
+    const successSound = new Audio("/audio/magical-sparkle.mp3");
+    successSound.volume = 1.0; // Full volume for magical moment
+    playAudioSafe(successSound);
 
-    // Fade out lock screen audio
+    // Fade out lock screen audio smoothly
     if (lockScreenAudioRef.current) {
       const fadeOut = setInterval(() => {
         if (
           lockScreenAudioRef.current &&
-          lockScreenAudioRef.current.volume > 0.02
+          lockScreenAudioRef.current.volume > 0.05
         ) {
-          lockScreenAudioRef.current.volume -= 0.02;
+          lockScreenAudioRef.current.volume = Math.max(
+            0,
+            lockScreenAudioRef.current.volume - 0.05,
+          );
         } else {
           clearInterval(fadeOut);
           if (lockScreenAudioRef.current) {
@@ -71,24 +84,25 @@ const Index = () => {
     setTimeout(() => {
       setPhase("envelope");
 
-      // Start envelope opening cinematic music
-      envelopeAudioRef.current = new Audio(
-        "https://cdn.pixabay.com/audio/2023/02/28/audio_115016f245.mp3",
-      ); // Emotional cinematic
-      envelopeAudioRef.current.volume = 0.3;
-      envelopeAudioRef.current.play();
+      // AUDIO: Romantic string orchestra - warm and flowing
+      envelopeAudioRef.current = new Audio("/audio/envelope-strings.mp3");
+      envelopeAudioRef.current.volume = 0.8; // Nice and present
+      playAudioSafe(envelopeAudioRef.current);
     }, 500);
   }, []);
 
   const handleEnvelopeDone = useCallback(() => {
-    // Fade out envelope audio
+    // Fade out envelope audio smoothly
     if (envelopeAudioRef.current) {
       const fadeOut = setInterval(() => {
         if (
           envelopeAudioRef.current &&
-          envelopeAudioRef.current.volume > 0.02
+          envelopeAudioRef.current.volume > 0.05
         ) {
-          envelopeAudioRef.current.volume -= 0.02;
+          envelopeAudioRef.current.volume = Math.max(
+            0,
+            envelopeAudioRef.current.volume - 0.05,
+          );
         } else {
           clearInterval(fadeOut);
           if (envelopeAudioRef.current) {
@@ -98,17 +112,16 @@ const Index = () => {
       }, 100);
     }
 
-    // Transition to letter
+    // Transition to letter reading
     setTimeout(() => {
       setPhase("letter");
 
-      // Start intimate reading music
-      letterAudioRef.current = new Audio(
-        "https://cdn.pixabay.com/audio/2022/05/13/audio_67b95e6b60.mp3",
-      ); // Soft romantic strings
+      // AUDIO: Soft ambient pad - LOUDER and richer
+
+      letterAudioRef.current = new Audio("/audio/letter-piano-ambient.mp3");
       letterAudioRef.current.loop = true;
-      letterAudioRef.current.volume = 0.2; // Very soft for reading
-      letterAudioRef.current.play();
+      letterAudioRef.current.volume = 0.01; // Much more present
+      playAudioSafe(letterAudioRef.current);
     }, 300);
   }, []);
 
