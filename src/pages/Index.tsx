@@ -7,6 +7,7 @@ type Phase = "locked" | "envelope" | "letter";
 
 const Index = () => {
   const [phase, setPhase] = useState<Phase>("locked");
+  const [fadeOut, setFadeOut] = useState(false);
 
   // Audio references for centralized control
   const lockScreenAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -80,15 +81,19 @@ const Index = () => {
       }, 50);
     }
 
-    // Transition to envelope phase
+    // Fade out current component
+    setFadeOut(true);
+
+    // Transition to envelope phase after fade
     setTimeout(() => {
       setPhase("envelope");
+      setFadeOut(false);
 
       // AUDIO: Romantic string orchestra - warm and flowing
       envelopeAudioRef.current = new Audio("/audio/envelope-strings.mp3");
       envelopeAudioRef.current.volume = 0.8; // Nice and present
       playAudioSafe(envelopeAudioRef.current);
-    }, 500);
+    }, 800); // Wait for fade out
   }, []);
 
   const handleEnvelopeDone = useCallback(() => {
@@ -112,15 +117,18 @@ const Index = () => {
       }, 100);
     }
 
-    // Transition to letter reading
+    // Switch immediately - no fade
+    setPhase("letter");
+
+    // Transition to letter reading after fade
     setTimeout(() => {
       setPhase("letter");
+      setFadeOut(false);
 
       // AUDIO: Soft ambient pad - LOUDER and richer
-
       letterAudioRef.current = new Audio("/audio/letter-piano-ambient.mp3");
       letterAudioRef.current.loop = true;
-      letterAudioRef.current.volume = 0.01; // Much more present
+      letterAudioRef.current.volume = 0.008; // Much more present
       playAudioSafe(letterAudioRef.current);
     }, 300);
   }, []);
@@ -138,13 +146,16 @@ const Index = () => {
   }, []);
 
   return (
-    <>
+    <div
+      className="transition-opacity duration-700 ease-in-out"
+      style={{ opacity: fadeOut ? 0 : 1 }}
+    >
       {phase === "locked" && <PasswordScreen onUnlock={handleUnlock} />}
       {phase === "envelope" && (
         <EnvelopeAnimation onComplete={handleEnvelopeDone} />
       )}
       {phase === "letter" && <LoveLetter />}
-    </>
+    </div>
   );
 };
 

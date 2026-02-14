@@ -12,7 +12,7 @@ const PasswordScreen = ({ onUnlock }: PasswordScreenProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (password.toLowerCase().trim() === "forever") {
+    if (password.toLowerCase().trim() === "patata") {
       onUnlock();
     } else {
       setError(true);
@@ -53,7 +53,7 @@ const PasswordScreen = ({ onUnlock }: PasswordScreenProps) => {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4 max-w-xs mx-auto">
+        <form onSubmit={handleSubmit} className="space-y-4 w-80 mx-auto">
           <input
             type="password"
             value={password}
@@ -78,7 +78,7 @@ const PasswordScreen = ({ onUnlock }: PasswordScreenProps) => {
         </form>
 
         <p className="mt-6 text-xs text-muted-foreground font-body">
-          Hint: What I promised you
+          Hint: the nickname we use for each other
         </p>
       </div>
 
